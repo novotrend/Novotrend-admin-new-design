@@ -73,7 +73,7 @@ export const getUserDetails = async ({ user_id }) => {
   return data;
 };
 
-const getUserDetailTabData = async ({ endpoint, logName, user_id, limit, offset }) => {
+const getUserDetailTabData = async ({ endpoint, logName, user_id, limit, offset, sdate, edate, accno }) => {
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -93,9 +93,25 @@ const getUserDetailTabData = async ({ endpoint, logName, user_id, limit, offset 
     payload.offset = offset;
   }
 
+  if (sdate !== undefined) {
+    payload.sdate = sdate;
+  }
+
+  if (edate !== undefined) {
+    payload.edate = edate;
+  }
+
+  if (accno !== undefined) {
+    payload.accno = accno;
+  }
+
+  console.log(`${logName} DECRYPTED PAYLOAD:`, payload);
+
   const data = await securePost(endpoint, payload, {
     logName,
   });
+
+  console.log(`${logName} DECRYPTED RESPONSE:`, data);
 
   if (data?.status !== 200 && data?.status !== 404) {
     throw new Error(data?.result || "Unable to fetch user detail data");
@@ -111,21 +127,61 @@ export const getUserIbDetails = ({ user_id }) =>
     user_id,
   });
 
-export const getUserLiveTrade = ({ user_id, limit = 10, offset = 0 }) =>
+export const getUserLiveTrade = ({ user_id, limit = 10, offset = 0, sdate = "", edate = "", accno = "" }) =>
   getUserDetailTabData({
     endpoint: API_ENDPOINT.USERS.LIVE_TRADE,
     logName: "GET USER LIVE TRADE",
     user_id,
     limit,
     offset,
+    sdate,
+    edate,
+    accno,
   });
 
-export const getUserTradingReport = ({ user_id }) =>
+export const getUserTradingReport = ({ user_id, sdate = "", edate = "", accno = "" }) =>
   getUserDetailTabData({
     endpoint: API_ENDPOINT.USERS.TRADING_REPORT,
     logName: "GET USER TRADING REPORT",
     user_id,
+    sdate,
+    edate,
+    accno,
   });
+
+export const getUserDownline = async ({ user_id, user_ref_code, reg_code, email }) => {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Session expired. Please login again.");
+  }
+
+  const payload = {
+    token,
+  };
+
+  const numericUserId = Number(user_id);
+  if (user_id !== undefined && user_id !== null && user_id !== "" && !Number.isNaN(numericUserId)) {
+    payload.user_id = numericUserId;
+  }
+
+  const refCode = user_ref_code || reg_code || email;
+  if (refCode) {
+    payload.user_ref_code = refCode;
+  }
+
+  const data = await securePost(API_ENDPOINT.USERS.GET_USER_DOWNLINE, payload, {
+    logName: "GET USER DOWNLINE",
+  });
+
+  console.log("GET USER DOWNLINE DECRYPTED RESPONSE:", data);
+
+  if (data?.status !== 200 && data?.status !== 404) {
+    throw new Error(data?.result || "Unable to fetch user downline");
+  }
+
+  return data;
+};
 
 // GET MT5 USER LIST
 export const getMT5UserList = async ({ limit = 10, offset = 0, search = "" }) => {

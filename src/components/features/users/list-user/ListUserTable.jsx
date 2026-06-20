@@ -20,6 +20,7 @@ import { useDebounce } from "use-debounce";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 const tableHeaders = [
   { label: "S.No", key: "id", sortable: false },
@@ -131,8 +132,9 @@ export default function ListUserTable() {
           sessionStorage.setItem("selectedUserDetails", JSON.stringify(response));
           router.push("/users/user-details");
         },
-        onError: () => {
+        onError: error => {
           setLoadingUserId("");
+          toast.error(error?.message || "Unable to fetch user details");
         },
       }
     );

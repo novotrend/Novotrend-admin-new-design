@@ -44,19 +44,19 @@ export const useUserIbDetailsQuery = ({ user_id }) => {
   });
 };
 
-export const useUserLiveTradeQuery = ({ user_id, limit = 10, offset = 0 }) => {
+export const useUserLiveTradeQuery = ({ user_id, limit = 10, offset = 0, sdate = "", edate = "", accno = "" }) => {
   return useQuery({
-    queryKey: ["user-live-trade", user_id, limit, offset],
-    queryFn: () => getUserLiveTrade({ user_id, limit, offset }),
-    enabled: Boolean(user_id),
+    queryKey: ["user-live-trade", user_id, limit, offset, sdate, edate, accno],
+    queryFn: () => getUserLiveTrade({ user_id, limit, offset, sdate, edate, accno }),
+    enabled: Boolean(user_id && sdate && edate && accno),
   });
 };
 
-export const useUserTradingReportQuery = ({ user_id }) => {
+export const useUserTradingReportQuery = ({ user_id, sdate = "", edate = "", accno = "" }) => {
   return useQuery({
-    queryKey: ["user-trading-report", user_id],
-    queryFn: () => getUserTradingReport({ user_id }),
-    enabled: Boolean(user_id),
+    queryKey: ["user-trading-report", user_id, sdate, edate, accno],
+    queryFn: () => getUserTradingReport({ user_id, sdate, edate, accno }),
+    enabled: Boolean(user_id && sdate && edate && accno),
   });
 };
 

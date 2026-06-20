@@ -5,6 +5,13 @@ import ExportDropdown from "@/components/common/tables/ExportDropdown";
 import TableFooter from "@/components/common/tables/TableFooter";
 import TableSearch from "@/components/common/tables/TableSearch";
 import TableWrapper from "@/components/common/tables/TableWrapper";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useClientPagination } from "@/hooks/useClientPagination";
 import { useUserTradingReportQuery } from "@/services/users/user.query";
@@ -36,7 +43,11 @@ const getValue = (source, keys, fallback = fallbackValue) => {
   return key ? source[key] : fallback;
 };
 
-const getTradeType = row => getValue(row, ["OpenAction", "CloseAction", "type", "action"]);
+const getTradeType = row => {
+  const action = getValue(row, ["action", "OpenAction", "CloseAction", "type"], "");
+
+  return String(action) === "0" ? "BUY" : "SELL";
+};
 
 const formatDate = value => {
   if (!value || value === fallbackValue) return fallbackValue;
@@ -52,14 +63,43 @@ const formatDate = value => {
   }).format(date);
 };
 
+const getTodayInputValue = () => new Date().toISOString().slice(0, 10);
+
 export default function TradeReport({ userDetails }) {
   const [search, setSearch] = useState("");
-  const { data } = useUserTradingReportQuery({
+  const [selectedAccno, setSelectedAccno] = useState("");
+  const [sdate, setSdate] = useState("");
+  const [edate, setEdate] = useState("");
+  const today = getTodayInputValue();
+  const accounts = userDetails?.mt5_accounts ?? [];
+  const hasRequiredFilters = Boolean(selectedAccno && sdate && edate);
+  const { data, error, isFetching, isLoading } = useUserTradingReportQuery({
     user_id: userDetails?.user?.user_id,
+    sdate,
+    edate,
+    accno: selectedAccno,
   });
-  const trades = data?.response?.trades ?? [];
+  const trades = data?.result?.data?.response?.trades ?? data?.response?.trades ?? [];
   const { limit, setLimit, offset, setOffset, total, paginatedItems } =
     useClientPagination(trades, 10, search);
+  const isTableLoading = hasRequiredFilters && (isLoading || (isFetching && trades.length === 0));
+  const handleStartDateChange = value => {
+    if (value > today) return;
+
+    setSdate(value);
+    setOffset(0);
+
+    if (value && edate && edate < value) {
+      setEdate("");
+    }
+  };
+
+  const handleEndDateChange = value => {
+    if (value > today || (sdate && value < sdate)) return;
+
+    setEdate(value);
+    setOffset(0);
+  };
 
   return (
     <TableWrapper
@@ -67,6 +107,42 @@ export default function TradeReport({ userDetails }) {
       description="Complete record of all trading activity"
       actions={
         <>
+          <Select
+            value={selectedAccno}
+            onValueChange={value => {
+              setSelectedAccno(value);
+              setOffset(0);
+            }}
+          >
+            <SelectTrigger className="h-11 w-full rounded-2xl border-border bg-background px-4 sm:w-[210px]">
+              <SelectValue placeholder="MT5 Account" />
+            </SelectTrigger>
+            <SelectContent className="z-[80] border border-border bg-background shadow-2xl">
+              {accounts.map(account => (
+                <SelectItem key={account.accno} value={String(account.accno)}>
+                  {account.accno}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <input
+            type="date"
+            value={sdate}
+            max={edate || today}
+            onChange={event => handleStartDateChange(event.target.value)}
+            className="h-11 w-full rounded-2xl border border-border bg-background px-4 text-sm text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 sm:w-[155px]"
+          />
+
+          <input
+            type="date"
+            value={edate}
+            min={sdate || undefined}
+            max={today}
+            onChange={event => handleEndDateChange(event.target.value)}
+            className="h-11 w-full rounded-2xl border border-border bg-background px-4 text-sm text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 sm:w-[155px]"
+          />
+
           <TableSearch value={search} onChange={value => { setSearch(value); setOffset(0); }} />
           <ExportDropdown />
         </>
@@ -82,7 +158,31 @@ export default function TradeReport({ userDetails }) {
       }
     >
       <DataTable headers={tableHeaders}>
-        {trades.length === 0 && (
+        {!hasRequiredFilters && (
+          <TableRow>
+            <TableCell colSpan={tableHeaders.length} className="py-8 text-center text-sm text-muted-foreground">
+              Select MT5 account, start date, and end date to load trade report.
+            </TableCell>
+          </TableRow>
+        )}
+
+        {isTableLoading && (
+          <TableRow>
+            <TableCell colSpan={tableHeaders.length} className="py-8 text-center text-sm text-muted-foreground">
+              Loading trade report...
+            </TableCell>
+          </TableRow>
+        )}
+
+        {hasRequiredFilters && !isTableLoading && error && (
+          <TableRow>
+            <TableCell colSpan={tableHeaders.length} className="py-8 text-center text-sm text-red-500">
+              Failed to load trade report.
+            </TableCell>
+          </TableRow>
+        )}
+
+        {hasRequiredFilters && !isTableLoading && !error && paginatedItems.length === 0 && (
           <TableRow>
             <TableCell colSpan={tableHeaders.length} className="py-8 text-center text-sm text-muted-foreground">
               No data found.

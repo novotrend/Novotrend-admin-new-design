@@ -9,6 +9,7 @@ import {
   getMT5AccountByEmail,
   getMT5AccountDetails,
   getUserDetails,
+  getUserDownline,
   getUsernameByAccountNo,
   getUsernameByEmail,
   sendVerificationMailMT5,
@@ -23,6 +24,12 @@ export const useAdminUserActionMutation = () => {
 export const useGetUserDetailsMutation = () => {
   return useMutation({
     mutationFn: getUserDetails,
+  });
+};
+
+export const useGetUserDownlineMutation = () => {
+  return useMutation({
+    mutationFn: getUserDownline,
   });
 };
 

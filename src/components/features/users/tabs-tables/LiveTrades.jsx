@@ -5,6 +5,13 @@ import ExportDropdown from "@/components/common/tables/ExportDropdown";
 import TableFooter from "@/components/common/tables/TableFooter";
 import TableSearch from "@/components/common/tables/TableSearch";
 import TableWrapper from "@/components/common/tables/TableWrapper";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useUserLiveTradeQuery } from "@/services/users/user.query";
 import { useMemo, useState } from "react";
@@ -35,7 +42,11 @@ const getValue = (source, keys, fallback = fallbackValue) => {
   return key ? source[key] : fallback;
 };
 
-const getTradeType = row => getValue(row, ["OpenAction", "CloseAction", "type", "action"]);
+const getTradeType = row => {
+  const action = getValue(row, ["action", "OpenAction", "CloseAction", "type"], "");
+
+  return String(action) === "0" ? "BUY" : "SELL";
+};
 
 const formatDate = value => {
   if (!value || value === fallbackValue) return fallbackValue;
@@ -51,16 +62,30 @@ const formatDate = value => {
   }).format(date);
 };
 
+const getTodayInputValue = () => new Date().toISOString().slice(0, 10);
+
 export default function LiveTrades({ userDetails }) {
   const [search, setSearch] = useState("");
+  const [selectedAccno, setSelectedAccno] = useState("");
+  const [sdate, setSdate] = useState("");
+  const [edate, setEdate] = useState("");
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
-  const { data } = useUserLiveTradeQuery({
+  const today = getTodayInputValue();
+  const accounts = userDetails?.mt5_accounts ?? [];
+  const hasRequiredFilters = Boolean(selectedAccno && sdate && edate);
+  const { data, error, isFetching, isLoading } = useUserLiveTradeQuery({
     user_id: userDetails?.user?.user_id,
     limit,
     offset,
+    sdate,
+    edate,
+    accno: selectedAccno,
   });
-  const trades = useMemo(() => data?.response?.trades ?? [], [data?.response?.trades]);
+  const trades = useMemo(
+    () => data?.result?.data?.response?.trades ?? data?.response?.trades ?? [],
+    [data?.response?.trades, data?.result?.data?.response?.trades]
+  );
   const filteredTrades = useMemo(() => {
     const query = search.trim().toLowerCase();
     if (!query) return trades;
@@ -72,7 +97,27 @@ export default function LiveTrades({ userDetails }) {
         .includes(query)
     );
   }, [trades, search]);
-  const total = search ? filteredTrades.length : Number(data?.response?.count) || trades.length;
+  const total = search
+    ? filteredTrades.length
+    : Number(data?.result?.data?.response?.count ?? data?.response?.count) || trades.length;
+  const isTableLoading = hasRequiredFilters && (isLoading || (isFetching && trades.length === 0));
+  const handleStartDateChange = value => {
+    if (value > today) return;
+
+    setSdate(value);
+    setOffset(0);
+
+    if (value && edate && edate < value) {
+      setEdate("");
+    }
+  };
+
+  const handleEndDateChange = value => {
+    if (value > today || (sdate && value < sdate)) return;
+
+    setEdate(value);
+    setOffset(0);
+  };
 
   return (
     <TableWrapper
@@ -80,6 +125,42 @@ export default function LiveTrades({ userDetails }) {
       description="Monitor all active and closed trading positions"
       actions={
         <>
+          <Select
+            value={selectedAccno}
+            onValueChange={value => {
+              setSelectedAccno(value);
+              setOffset(0);
+            }}
+          >
+            <SelectTrigger className="h-11 w-full rounded-2xl border-border bg-background px-4 sm:w-[210px]">
+              <SelectValue placeholder="MT5 Account" />
+            </SelectTrigger>
+            <SelectContent className="z-[80] border border-border bg-background shadow-2xl">
+              {accounts.map(account => (
+                <SelectItem key={account.accno} value={String(account.accno)}>
+                  {account.accno}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <input
+            type="date"
+            value={sdate}
+            max={edate || today}
+            onChange={event => handleStartDateChange(event.target.value)}
+            className="h-11 w-full rounded-2xl border border-border bg-background px-4 text-sm text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 sm:w-[155px]"
+          />
+
+          <input
+            type="date"
+            value={edate}
+            min={sdate || undefined}
+            max={today}
+            onChange={event => handleEndDateChange(event.target.value)}
+            className="h-11 w-full rounded-2xl border border-border bg-background px-4 text-sm text-foreground outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/10 sm:w-[155px]"
+          />
+
           <TableSearch value={search} onChange={value => { setSearch(value); setOffset(0); }} />
           <ExportDropdown />
         </>
@@ -95,7 +176,31 @@ export default function LiveTrades({ userDetails }) {
       }
     >
       <DataTable headers={tableHeaders}>
-        {trades.length === 0 && (
+        {!hasRequiredFilters && (
+          <TableRow>
+            <TableCell colSpan={tableHeaders.length} className="py-8 text-center text-sm text-muted-foreground">
+              Select MT5 account, start date, and end date to load live trades.
+            </TableCell>
+          </TableRow>
+        )}
+
+        {isTableLoading && (
+          <TableRow>
+            <TableCell colSpan={tableHeaders.length} className="py-8 text-center text-sm text-muted-foreground">
+              Loading live trades...
+            </TableCell>
+          </TableRow>
+        )}
+
+        {hasRequiredFilters && !isTableLoading && error && (
+          <TableRow>
+            <TableCell colSpan={tableHeaders.length} className="py-8 text-center text-sm text-red-500">
+              Failed to load live trades.
+            </TableCell>
+          </TableRow>
+        )}
+
+        {hasRequiredFilters && !isTableLoading && !error && filteredTrades.length === 0 && (
           <TableRow>
             <TableCell colSpan={tableHeaders.length} className="py-8 text-center text-sm text-muted-foreground">
               No data found.

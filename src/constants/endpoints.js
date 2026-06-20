@@ -24,6 +24,7 @@ export const API_ENDPOINT = {
     MT5_MAIN_PASSWORD_REQUEST_LIST: "/user/mt5_main_password_request_list.php",
     CHANGE_MT5_MAIN_PASSWORD_REQUEST_LIST: "/user/change_mt5_main_password_action.php",
     GET_USER_DETAILS: "/user_details/get_user_details.php",
+    GET_USER_DOWNLINE: "/user_details/get_user_downline.php",
     IB_DETAILS: "/user_details/ib_details.php",
     LIVE_TRADE: "/user_details/live_trade.php",
     TRADING_REPORT: "/user_details/trading_report.php",

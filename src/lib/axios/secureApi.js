@@ -69,7 +69,7 @@ export const securePost = async (url, payload, options = {}) => {
     }
   } catch (error) {
     if (logName) {
-      console.error(`${logName} ERROR RESPONSE:`, {
+      console.warn(`${logName} ERROR RESPONSE:`, {
         status: error?.response?.status,
         data: error?.response?.data,
         message: error?.message,
