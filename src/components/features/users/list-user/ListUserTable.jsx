@@ -273,7 +273,7 @@ export default function ListUserTable() {
 
             {/* IB Name */}
             <TableCell className="px-6 py-5 text-sm text-foreground">
-              {user["ib name"] || "-"}
+              {user.ib_name || user.ibName || user["ib name"] || "-"}
             </TableCell>
 
             {/* Registration Date */}

@@ -14,7 +14,10 @@ export const getUserList = async ({ limit = 10, offset = 0, search }) => {
     search: search?.trim() || "",
   };
 
+  console.log("GET USER LIST DECRYPTED PAYLOAD:", payload);
+
   const data = await securePost(API_ENDPOINT.USERS.USERLIST, payload);
+  console.log("GET USER LIST DECRYPTED RESPONSE:", data);
   // VALIDATION
   if (data?.status !== 200) {
     throw new Error(data?.result || "Unable to load users");
