@@ -132,7 +132,7 @@ export default function AucationCode() {
         <div className="rounded-[32px] border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-2xl">
           <div className="mb-8 text-center">
             <Image
-              src="/QAAFIE2-white.png"
+              src="/lightmode.png"
               alt="Logo"
               width={170}
               height={50}
