@@ -53,8 +53,10 @@ export default function ListIB() {
     search,
   });
 
-  const rows = data?.data?.response?.records || [];
-  const totalRecords = data?.total_records || 0;
+  const rows = data?.data?.response?.records || data?.response?.records || [];
+  const totalRecords =
+    Number(data?.data?.response?.total_records ?? data?.response?.total_records ?? data?.total_records) ||
+    rows.length;
 
   const copyReferralLink = async (link) => {
     if (!link) return;

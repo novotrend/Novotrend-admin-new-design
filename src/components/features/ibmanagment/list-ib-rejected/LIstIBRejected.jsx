@@ -19,10 +19,8 @@ const tableHeaders = [
 
 export default function LIstIBRejected() {
   const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-
-  const limit = 10;
-  const offset = (page - 1) * limit;
+  const [limit, setLimit] = useState(10);
+  const [offset, setOffset] = useState(0);
 
   const { data, isLoading, isFetching } = useRejectedIBList({
     limit,
@@ -30,8 +28,10 @@ export default function LIstIBRejected() {
     search,
   });
 
-  const rows = data?.data?.response?.records || [];
-  const totalRecords = data?.total || 0;
+  const rows = data?.data?.response?.records || data?.response?.records || [];
+  const totalRecords =
+    Number(data?.data?.response?.total_records ?? data?.response?.total_records ?? data?.total) ||
+    rows.length;
 
   return (
     <TableWrapper
@@ -43,7 +43,7 @@ export default function LIstIBRejected() {
             value={search}
             onChange={(value) => {
               setSearch(value);
-              setPage(1);
+              setOffset(0);
             }}
           />
 
@@ -52,10 +52,11 @@ export default function LIstIBRejected() {
       }
       footer={
         <TableFooter
-          currentPage={page}
-          totalItems={totalRecords}
-          pageSize={limit}
-          onPageChange={setPage}
+          limit={limit}
+          setLimit={setLimit}
+          offset={offset}
+          setOffset={setOffset}
+          total={totalRecords}
         />
       }
     >

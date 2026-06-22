@@ -76,7 +76,16 @@ export const getUserDetails = async ({ user_id }) => {
   return data;
 };
 
-const getUserDetailTabData = async ({ endpoint, logName, user_id, limit, offset, sdate, edate, accno }) => {
+const getUserDetailTabData = async ({
+  endpoint,
+  logName,
+  user_id,
+  limit,
+  offset,
+  sdate,
+  edate,
+  accno,
+}) => {
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -130,7 +139,14 @@ export const getUserIbDetails = ({ user_id }) =>
     user_id,
   });
 
-export const getUserLiveTrade = ({ user_id, limit = 10, offset = 0, sdate = "", edate = "", accno = "" }) =>
+export const getUserLiveTrade = ({
+  user_id,
+  limit = 10,
+  offset = 0,
+  sdate = "",
+  edate = "",
+  accno = "",
+}) =>
   getUserDetailTabData({
     endpoint: API_ENDPOINT.USERS.LIVE_TRADE,
     logName: "GET USER LIVE TRADE",
@@ -413,6 +429,7 @@ export const getMT5PasswordList = async ({ status = 0, limit = 10, offset = 0, s
     search,
   };
   const res = await securePost(API_ENDPOINT.USERS.MT5_MAIN_PASSWORD_REQUEST_LIST, payload);
+  console.log("MT5 PASSWORD LIST DECRYPTED RESPONSE:", res);
   if (res?.status !== 200) {
     throw new Error(res?.result || "Failed to fetch MT5 password list");
   }

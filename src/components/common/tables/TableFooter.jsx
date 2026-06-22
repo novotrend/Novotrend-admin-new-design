@@ -1,23 +1,65 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
+
+const getVisiblePages = (currentPage, totalPages) => {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  if (currentPage <= 5) {
+    return [1, 2, 3, 4, 5, "end-ellipsis", totalPages];
+  }
+
+  if (currentPage >= totalPages - 4) {
+    return [
+      1,
+      "start-ellipsis",
+      totalPages - 4,
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages,
+    ];
+  }
+
+  return [
+    1,
+    "start-ellipsis",
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    "end-ellipsis",
+    totalPages,
+  ];
+};
+
 export default function TableFooter({ limit, setLimit, offset, setOffset, total }) {
   const currentPage = Math.floor(offset / limit) + 1;
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const visiblePages = getVisiblePages(currentPage, totalPages);
   const start = total === 0 ? 0 : offset + 1;
   const end = Math.min(offset + limit, total);
+
   const changeLimit = value => {
     setLimit(Number(value));
     setOffset(0);
   };
+
   const previous = () => {
     if (offset >= limit) {
       setOffset(offset - limit);
     }
   };
+
   const next = () => {
     if (offset + limit < total) {
       setOffset(offset + limit);
     }
+  };
+
+  const goToPage = page => {
+    setOffset((page - 1) * limit);
   };
 
   return (
@@ -27,7 +69,7 @@ export default function TableFooter({ limit, setLimit, offset, setOffset, total 
 
         <select
           value={limit}
-          onChange={e => changeLimit(e.target.value)}
+          onChange={event => changeLimit(event.target.value)}
           className="h-10 rounded-2xl border border-border bg-background px-3 text-sm"
         >
           <option value={10}>10</option>
@@ -43,31 +85,58 @@ export default function TableFooter({ limit, setLimit, offset, setOffset, total 
         Showing {start} to {end} of {total} entries
       </p>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center justify-end gap-2">
         <button
+          type="button"
           onClick={previous}
           disabled={offset === 0}
-          className={`h-10 w-10 rounded-2xl border border-border bg-background text-sm transition ${
+          aria-label="Previous page"
+          className={`flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-background text-sm transition ${
             offset === 0
               ? "cursor-not-allowed opacity-50"
               : "hover:border-primary hover:text-foreground"
           }`}
         >
-          ←
+          <ChevronLeft className="h-4 w-4" />
         </button>
-        <div className="rounded-2xl bg-primary px-4 py-2 text-sm font-semibold text-white">
-          {currentPage}
-        </div>
+
+        {visiblePages.map(page =>
+          typeof page === "number" ? (
+            <button
+              key={page}
+              type="button"
+              onClick={() => goToPage(page)}
+              aria-current={page === currentPage ? "page" : undefined}
+              className={`h-10 min-w-10 rounded-2xl px-3 text-sm font-semibold transition ${
+                page === currentPage
+                  ? "bg-primary text-white"
+                  : "border border-border bg-background text-muted-foreground hover:border-primary hover:text-foreground"
+              }`}
+            >
+              {page}
+            </button>
+          ) : (
+            <span
+              key={page}
+              className="flex h-10 min-w-8 items-center justify-center text-sm font-semibold text-muted-foreground"
+            >
+              ...
+            </span>
+          )
+        )}
+
         <button
+          type="button"
           onClick={next}
           disabled={offset + limit >= total}
-          className={`h-10 w-10 rounded-2xl border border-border bg-background text-sm transition ${
+          aria-label="Next page"
+          className={`flex h-10 w-10 items-center justify-center rounded-2xl border border-border bg-background text-sm transition ${
             offset + limit >= total
               ? "cursor-not-allowed opacity-50"
               : "hover:border-primary hover:text-foreground"
           }`}
         >
-          →
+          <ChevronRight className="h-4 w-4" />
         </button>
       </div>
     </div>
