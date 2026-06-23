@@ -3,6 +3,7 @@
 import { Users } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 import DataTable from "@/components/common/tables/DataTable";
 import ExportDropdown from "@/components/common/tables/ExportDropdown";
@@ -23,6 +24,8 @@ const tableHeaders = [
 
 export default function IBLevelList() {
   const searchParams = useSearchParams();
+  const [limit, setLimit] = useState(10);
+  const [offset, setOffset] = useState(0);
 
   const userCode = searchParams.get("userCode");
 
@@ -31,6 +34,13 @@ export default function IBLevelList() {
   });
 
   const rows = data?.data?.response?.data || [];
+  const effectiveOffset = offset < rows.length ? offset : 0;
+  const visibleRows = rows.slice(effectiveOffset, effectiveOffset + limit);
+
+  const handleLimitChange = value => {
+    setLimit(value);
+    setOffset(0);
+  };
 
   return (
     <TableWrapper
@@ -44,11 +54,11 @@ export default function IBLevelList() {
       }
       footer={
         <TableFooter
-          limit={10}
-          offset={0}
+          limit={limit}
+          offset={effectiveOffset}
           total={rows.length}
-          setLimit={() => {}}
-          setOffset={() => {}}
+          setLimit={handleLimitChange}
+          setOffset={setOffset}
         />
       }
     >
@@ -59,14 +69,14 @@ export default function IBLevelList() {
               Loading...
             </TableCell>
           </TableRow>
-        ) : rows.length > 0 ? (
-          rows.map((item, index) => (
+        ) : visibleRows.length > 0 ? (
+          visibleRows.map((item, index) => (
             <TableRow
               key={`${item.level}-${index}`}
               className="border-b border-border transition-all hover:bg-muted/40"
             >
               <TableCell className="px-6 py-5 text-sm font-medium text-muted-foreground">
-                {String(offset + index + 1).padStart(2, "0")}
+                {String(effectiveOffset + index + 1).padStart(2, "0")}
               </TableCell>
 
               <TableCell className="px-6 py-5">
