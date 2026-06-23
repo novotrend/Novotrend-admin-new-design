@@ -1,13 +1,24 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useSyncExternalStore } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useSyncExternalStore,
+} from "react";
 
 const AuthContext = createContext(null);
 const AUTH_CHANGE_EVENT = "novotrend-auth-change";
 const AUTH_LOADING_SNAPSHOT = "__auth_loading__";
 export const AUTH_SESSION_KEY = "novotrend-active-session";
+const AUTH_SESSION_CHANNEL = "novotrend-auth-session-channel";
+const AUTH_SESSION_REQUEST = "auth-session-request";
+const AUTH_SESSION_RESPONSE = "auth-session-response";
 const LAST_ACTIVITY_KEY = "novotrend-last-activity";
 const IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+const SESSION_HANDOFF_TIMEOUT_MS = 1000;
 const ACTIVITY_EVENTS = ["click", "keydown", "mousemove", "scroll", "touchstart"];
 
 const clearAuthStorage = () => {
@@ -86,6 +97,34 @@ const emitAuthChange = () => {
   window.dispatchEvent(new Event(AUTH_CHANGE_EVENT));
 };
 
+const requestActiveSession = () => {
+  if (typeof window === "undefined" || typeof BroadcastChannel === "undefined") {
+    return Promise.resolve(false);
+  }
+
+  return new Promise(resolve => {
+    const requestId = `${Date.now()}-${Math.random()}`;
+    const channel = new BroadcastChannel(AUTH_SESSION_CHANNEL);
+    const timer = window.setTimeout(() => {
+      channel.close();
+      resolve(false);
+    }, SESSION_HANDOFF_TIMEOUT_MS);
+
+    channel.onmessage = event => {
+      if (
+        event.data?.type === AUTH_SESSION_RESPONSE &&
+        event.data?.requestId === requestId
+      ) {
+        window.clearTimeout(timer);
+        channel.close();
+        resolve(true);
+      }
+    };
+
+    channel.postMessage({ type: AUTH_SESSION_REQUEST, requestId });
+  });
+};
+
 export const AuthProvider = ({ children }) => {
   const authSnapshot = useSyncExternalStore(
     subscribeToAuth,
@@ -95,7 +134,9 @@ export const AuthProvider = ({ children }) => {
   const user = useMemo(() => parseStoredUser(authSnapshot), [authSnapshot]);
   const isAuthLoading = authSnapshot === AUTH_LOADING_SNAPSHOT;
   const isVerified =
-    !isAuthLoading && typeof window !== "undefined" && localStorage.getItem("isLoggedIn") === "true";
+    !isAuthLoading &&
+    typeof window !== "undefined" &&
+    localStorage.getItem("isLoggedIn") === "true";
 
   const login = useCallback(userData => {
     sessionStorage.removeItem(AUTH_SESSION_KEY);
@@ -122,11 +163,7 @@ export const AuthProvider = ({ children }) => {
 
     if (!token || !verified) return undefined;
 
-    if (sessionStorage.getItem(AUTH_SESSION_KEY) !== "true") {
-      logout();
-      window.location.replace("/login");
-      return undefined;
-    }
+    let isEffectActive = true;
 
     const logoutForIdle = () => {
       logout();
@@ -145,6 +182,24 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()));
     };
 
+    const verifyTabSession = async () => {
+      if (sessionStorage.getItem(AUTH_SESSION_KEY) === "true") return;
+
+      const hasActiveSession = await requestActiveSession();
+
+      if (!isEffectActive) return;
+
+      if (hasActiveSession) {
+        sessionStorage.setItem(AUTH_SESSION_KEY, "true");
+        return;
+      }
+
+      logout();
+      window.location.replace("/login");
+    };
+
+    verifyTabSession();
+
     if (!localStorage.getItem(LAST_ACTIVITY_KEY)) {
       recordActivity();
     }
@@ -158,6 +213,7 @@ export const AuthProvider = ({ children }) => {
     window.addEventListener("pageshow", checkIdle);
 
     return () => {
+      isEffectActive = false;
       ACTIVITY_EVENTS.forEach(eventName => {
         window.removeEventListener(eventName, recordActivity);
       });
@@ -166,6 +222,32 @@ export const AuthProvider = ({ children }) => {
       window.removeEventListener("pageshow", checkIdle);
     };
   }, [isAuthLoading, logout]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof BroadcastChannel === "undefined") {
+      return undefined;
+    }
+
+    const channel = new BroadcastChannel(AUTH_SESSION_CHANNEL);
+
+    channel.onmessage = event => {
+      if (
+        event.data?.type === AUTH_SESSION_REQUEST &&
+        sessionStorage.getItem(AUTH_SESSION_KEY) === "true" &&
+        localStorage.getItem("token") &&
+        localStorage.getItem("isLoggedIn") === "true"
+      ) {
+        channel.postMessage({
+          type: AUTH_SESSION_RESPONSE,
+          requestId: event.data.requestId,
+        });
+      }
+    };
+
+    return () => {
+      channel.close();
+    };
+  }, []);
 
   const setUser = userData => {
     if (userData) {
