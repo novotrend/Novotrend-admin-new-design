@@ -137,7 +137,13 @@ const getSupportTicketList = async ({ endpoint, label, errorMessage, limit, offs
     search: search?.trim() || "",
   };
 
-  const data = unwrapNestedEncryptedResult(await securePost(endpoint, payload));
+  const data = unwrapNestedEncryptedResult(
+    await securePost(endpoint, payload, {
+      logName: label,
+    })
+  );
+
+  console.log(`${label} DECRYPTED RESPONSE:`, data);
 
   if (data?.status !== 200) {
     throw new Error(data?.result || errorMessage);

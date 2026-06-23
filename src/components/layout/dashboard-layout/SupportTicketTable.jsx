@@ -24,44 +24,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const initialTickets = [
-  {
-    id: 1,
-    name: "Andrew Smith",
-    email: "andrew@example.com",
-    mobile: "+91 98765 43210",
-    date: "14 May 2026",
-    supportId: "#SP1024",
-    subject: "Deposit Issue",
-    assignedTo: "0",
-  },
-  {
-    id: 2,
-    name: "Michael Lee",
-    email: "michael@example.com",
-    mobile: "+91 99887 76655",
-    date: "14 May 2026",
-    supportId: "#SP1025",
-    subject: "Withdrawal Pending",
-    assignedTo: "0",
-  },
-  {
-    id: 3,
-    name: "Emma Watson",
-    email: "emma@example.com",
-    mobile: "+91 91234 56780",
-    date: "13 May 2026",
-    supportId: "#SP1026",
-    subject: "MT5 Login Problem",
-    assignedTo: "0",
-  },
-];
-
 export default function SupportTicketTable() {
-  const [limit] = useState(10);
-  const [offset, setOffset] = useState(0);
   const queryClient = useQueryClient();
-  const { data } = useDashboardQuery({ limit, offset });
+  const { data } = useDashboardQuery();
   const { mutate: assignTicket, isPending: isAssigning } = useAssignDashboardTicketMutation();
   const supportTickets = data?.response?.support_ticket;
   const staffList = Array.isArray(data?.response?.staff_list) ? data.response.staff_list : [];
@@ -77,7 +42,7 @@ export default function SupportTicketTable() {
         assignedTo: ticket.assigned_to || ticket.assignedTo || "0",
         currentAssignedTo: ticket.assigned_to || ticket.assignedTo || "0",
       }))
-    : initialTickets;
+    : [];
   const [assignedById, setAssignedById] = useState({});
   const [savedAssignedById, setSavedAssignedById] = useState({});
   const tickets = dashboardTickets.map(ticket => ({
@@ -114,10 +79,6 @@ export default function SupportTicketTable() {
   const assigned = tickets.filter(ticket => ticket.assignedTo !== "0").length;
 
   const unassigned = tickets.length - assigned;
-  const currentPage = Math.floor(offset / limit) + 1;
-  const hasPrev = offset > 0;
-  const hasNext = tickets.length >= limit;
-
   return (
     <Card className="overflow-hidden rounded-[28px] border border-border bg-card">
       <CardContent className="p-0">
@@ -175,7 +136,16 @@ export default function SupportTicketTable() {
             </TableHeader>
 
             <TableBody>
-              {tickets.map(ticket => {
+              {tickets.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={9}
+                    className="px-5 py-10 text-center text-sm text-muted-foreground"
+                  >
+                    No support tickets found.
+                  </TableCell>
+                </TableRow>
+              ) : tickets.map((ticket, index) => {
                 const isAssigned = ticket.assignedTo !== "0";
                 const isAssignDisabled =
                   ticket.assignedTo === "0" ||
@@ -189,7 +159,7 @@ export default function SupportTicketTable() {
                   >
                     {/* SR NO */}
                     <TableCell className="px-5 py-4 text-sm font-medium text-muted-foreground">
-                      {String(ticket.id).padStart(2, "0")}
+                      {String(index + 1).padStart(2, "0")}
                     </TableCell>
 
                     {/* Name */}
@@ -308,28 +278,7 @@ export default function SupportTicketTable() {
             </p>
           </div>
 
-          {/* Pagination */}
-          <div className="flex items-center gap-2">
-            <button
-              disabled={!hasPrev}
-              onClick={() => setOffset(prev => Math.max(prev - limit, 0))}
-              className="rounded-xl border border-border bg-background px-4 py-2 text-xs font-medium text-muted-foreground transition-all hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Prev
-            </button>
-
-            <button className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-xs font-semibold text-primary-foreground">
-              {currentPage}
-            </button>
-
-            <button
-              disabled={!hasNext}
-              onClick={() => setOffset(prev => prev + limit)}
-              className="rounded-xl border border-border bg-background px-4 py-2 text-xs font-medium text-muted-foreground transition-all hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Next
-            </button>
-          </div>
+          <p className="text-sm text-muted-foreground">Showing latest dashboard tickets</p>
         </div>
       </CardContent>
     </Card>

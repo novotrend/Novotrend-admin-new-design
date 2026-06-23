@@ -14,8 +14,12 @@ export const getDashboardData = async ({ limit = 10, offset = 0 } = {}) => {
     offset,
   };
 
-  const data = await securePost(API_ENDPOINT.DASHBOARD.DASHBOARD, payload, { log: false });
+  const data = await securePost(API_ENDPOINT.DASHBOARD.DASHBOARD, payload, {
+    logName: "DASHBOARD DATA",
+  });
   const dashboardData = data?.data ?? data;
+
+  console.log("DASHBOARD DATA DECRYPTED RESPONSE:", dashboardData);
 
   if (dashboardData?.status !== 200) {
     throw new Error(dashboardData?.result || "Unable to fetch dashboard data");
