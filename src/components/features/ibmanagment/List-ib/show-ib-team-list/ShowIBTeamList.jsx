@@ -84,10 +84,6 @@ export default function ShowIBTeamList() {
 
               <TableCell className="px-6 py-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-sm font-semibold text-primary">
-                    {(item?.name || "U").charAt(0).toUpperCase()}
-                  </div>
-
                   <div>
                     <p className="text-sm font-semibold text-foreground">{item?.name || "-"}</p>
 

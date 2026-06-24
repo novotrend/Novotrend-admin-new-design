@@ -79,10 +79,6 @@ export default function LIstIBRejected() {
 
               <TableCell className="px-6 py-5">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-red-500/10 text-sm font-semibold text-red-500">
-                    {item?.name?.charAt(0) || "-"}
-                  </div>
-
                   <div>
                     <p className="text-sm font-semibold text-foreground">
                       {item?.name || "-"}

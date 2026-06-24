@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import TableFooter from "@/components/common/tables/TableFooter";
 import { Card, CardContent } from "@/components/ui/card";
 import { useAssignDashboardTicketMutation } from "@/services/dashboard/dashboard.mutation";
 import { useDashboardQuery } from "@/services/dashboard/dashboard.query";
@@ -25,10 +26,13 @@ import {
 } from "@/components/ui/table";
 
 export default function SupportTicketTable() {
+  const [limit, setLimit] = useState(10);
+  const [offset, setOffset] = useState(0);
   const queryClient = useQueryClient();
-  const { data } = useDashboardQuery();
+  const { data, isFetching } = useDashboardQuery({ limit, offset });
   const { mutate: assignTicket, isPending: isAssigning } = useAssignDashboardTicketMutation();
   const supportTickets = data?.response?.support_ticket;
+  const totalRecords = Number(data?.response?.total_records) || 0;
   const staffList = Array.isArray(data?.response?.staff_list) ? data.response.staff_list : [];
   const dashboardTickets = Array.isArray(supportTickets)
     ? supportTickets.map((ticket, index) => ({
@@ -98,7 +102,7 @@ export default function SupportTicketTable() {
             <div className="rounded-2xl border border-border bg-muted/40 px-4 py-2">
               <p className="text-xs text-muted-foreground">Active Tickets</p>
 
-              <h4 className="mt-1 text-sm font-semibold">{tickets.length}</h4>
+              <h4 className="mt-1 text-sm font-semibold">{totalRecords || tickets.length}</h4>
             </div>
 
             <div className="rounded-2xl border border-border bg-primary/5 px-4 py-2">
@@ -110,7 +114,12 @@ export default function SupportTicketTable() {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto overflow-y-visible">
+        <div className="relative overflow-x-auto overflow-y-visible">
+          {isFetching && (
+            <div className="absolute right-5 top-4 z-10 rounded-full border border-border bg-background px-3 py-1 text-xs font-medium text-muted-foreground shadow-sm">
+              Loading...
+            </div>
+          )}
           <Table className="min-w-[1150px]">
             <TableHeader>
               <TableRow className="border-border bg-muted/30 hover:bg-muted/30">
@@ -159,16 +168,12 @@ export default function SupportTicketTable() {
                   >
                     {/* SR NO */}
                     <TableCell className="px-5 py-4 text-sm font-medium text-muted-foreground">
-                      {String(index + 1).padStart(2, "0")}
+                      {String(offset + index + 1).padStart(2, "0")}
                     </TableCell>
 
                     {/* Name */}
                     <TableCell className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-primary/10 text-xs font-semibold text-primary">
-                          {ticket.name.charAt(0)}
-                        </div>
-
                         <div>
                           <p className="text-sm font-semibold text-foreground">{ticket.name}</p>
                         </div>
@@ -264,7 +269,9 @@ export default function SupportTicketTable() {
           <div className="flex items-center gap-5 text-sm text-muted-foreground">
             <p>
               Total:
-              <span className="ml-1 font-semibold text-foreground">{tickets.length}</span>
+              <span className="ml-1 font-semibold text-foreground">
+                {totalRecords || tickets.length}
+              </span>
             </p>
 
             <p>
@@ -278,8 +285,16 @@ export default function SupportTicketTable() {
             </p>
           </div>
 
-          <p className="text-sm text-muted-foreground">Showing latest dashboard tickets</p>
+          <span className="text-sm text-muted-foreground">Current page: {tickets.length}</span>
         </div>
+
+        <TableFooter
+          limit={limit}
+          setLimit={setLimit}
+          offset={offset}
+          setOffset={setOffset}
+          total={totalRecords || tickets.length}
+        />
       </CardContent>
     </Card>
   );

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getDashboardData } from "./dashboard.service";
 
 export const useDashboardQuery = ({ limit = 10, offset = 0 } = {}) => {
@@ -9,5 +9,6 @@ export const useDashboardQuery = ({ limit = 10, offset = 0 } = {}) => {
         limit,
         offset,
       }),
+    placeholderData: keepPreviousData,
   });
 };

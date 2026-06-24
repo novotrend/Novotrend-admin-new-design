@@ -95,10 +95,6 @@ export default function RejectedList() {
 
                   <TableCell className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-red-500/10 text-sm font-semibold text-red-500">
-                        {item?.name?.charAt(0) || "U"}
-                      </div>
-
                       <div>
                         <p className="text-sm font-semibold text-foreground">{item?.name || "-"}</p>
 

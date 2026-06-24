@@ -103,13 +103,7 @@ export default function ListEmployee() {
               className="border-b border-border hover:bg-muted/40"
             >
               <TableCell className="px-6 py-5">{offset + index + 1}</TableCell>
-              <TableCell className="px-6 py-5">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 font-semibold text-primary">
-                    {employee.name?.charAt(0)}
-                  </div>
-                </div>
-              </TableCell>
+              <TableCell className="px-6 py-5">{employee.name || "-"}</TableCell>
               <TableCell className="px-6 py-5">{employee.username}</TableCell>
               <TableCell className="px-6 py-5">••••••••</TableCell>
               <TableCell className="px-6 py-5 whitespace-nowrap">{employee.email}</TableCell>
