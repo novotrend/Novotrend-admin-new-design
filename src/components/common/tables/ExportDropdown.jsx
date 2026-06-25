@@ -109,7 +109,7 @@ const pdfLine = (x1, y1, x2, y2, color = "0.86 0.89 0.93") =>
   `${color} RG 0.5 w ${x1} ${y1} m ${x2} ${y2} l S`;
 
 const getMaxCharsForWidth = (width, fontSize = 7) =>
-  Math.max(4, Math.floor((width - 8) / (fontSize * 0.5)));
+  Math.max(4, Math.floor((width - 12) / (fontSize * 0.75)));
 
 const wrapPdfText = (value, width, fontSize = 7) => {
   const maxChars = getMaxCharsForWidth(width, fontSize);
