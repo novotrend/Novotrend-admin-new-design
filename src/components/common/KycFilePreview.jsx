@@ -1,7 +1,7 @@
 "use client";
 
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { FileText } from "lucide-react";
+import { FileText, ImageOff } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -37,9 +37,10 @@ export const KycFileThumbnail = ({ src, alt, onPreview }) => {
     );
   }
 
-  const isImage = isImageFile(src) && failedImageSrc !== src;
+  const isPdf = isPdfFile(src);
+  const isImage = isImageFile(src);
 
-  if (isImage) {
+  if (isImage && failedImageSrc !== src) {
     return (
       <button onClick={onPreview} className="overflow-hidden rounded-2xl border border-border">
         <Image
@@ -54,15 +55,26 @@ export const KycFileThumbnail = ({ src, alt, onPreview }) => {
     );
   }
 
-  // PDF file
+  if (isPdf) {
+    return (
+      <button
+        onClick={onPreview}
+        className="flex h-16 w-24 items-center justify-center rounded-2xl border border-border bg-red-500/10 transition-all hover:bg-red-500/20"
+        title="Click to open PDF"
+      >
+        <FileText className="h-6 w-6 text-red-500" />
+      </button>
+    );
+  }
+
   return (
-    <button
-      onClick={onPreview}
-      className="flex h-16 w-24 items-center justify-center rounded-2xl border border-border bg-red-500/10 transition-all hover:bg-red-500/20"
-      title="Click to open PDF"
+    <div
+      className="flex h-16 w-24 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/30 text-xs font-medium text-muted-foreground"
+      title={isImage ? "Image preview unavailable" : "Unsupported file"}
     >
-      <FileText className="h-6 w-6 text-red-500" />
-    </button>
+      <ImageOff className="mb-1 h-5 w-5" />
+      No preview
+    </div>
   );
 };
 
@@ -80,7 +92,9 @@ export const KycFilePreviewDialog = ({
 
   if (!selectedFile) return null;
 
-  const isImage = isImageFile(selectedFile) && failedPreviewSrc !== selectedFile;
+  const isPdf = isPdfFile(selectedFile);
+  const isImage = isImageFile(selectedFile);
+  const canPreviewImage = isImage && failedPreviewSrc !== selectedFile;
 
   const handleOpen = () => {
     window.open(selectedFile, "_blank");
@@ -91,7 +105,7 @@ export const KycFilePreviewDialog = ({
       <DialogContent className="max-w-5xl rounded-3xl border border-border bg-background p-4 overflow-hidden">
         <DialogTitle className="sr-only">{fileName}</DialogTitle>
 
-        {isImage ? (
+        {canPreviewImage ? (
           <div className="overflow-hidden rounded-2xl">
             <Image
               src={selectedFile}
@@ -102,7 +116,7 @@ export const KycFilePreviewDialog = ({
               className="max-h-[80vh] w-full rounded-2xl object-contain"
             />
           </div>
-        ) : (
+        ) : isPdf ? (
           <div className="flex h-80 items-center justify-center rounded-2xl bg-muted">
             <div className="text-center">
               <FileText className="mx-auto h-16 w-16 text-red-500" />
@@ -116,6 +130,16 @@ export const KycFilePreviewDialog = ({
               >
                 Open PDF
               </button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex h-80 items-center justify-center rounded-2xl bg-muted">
+            <div className="text-center">
+              <ImageOff className="mx-auto h-16 w-16 text-muted-foreground" />
+              <p className="mt-4 font-medium text-foreground">Preview unavailable</p>
+              <p className="text-sm text-muted-foreground">
+                This file is not a PDF, and the image could not be loaded.
+              </p>
             </div>
           </div>
         )}

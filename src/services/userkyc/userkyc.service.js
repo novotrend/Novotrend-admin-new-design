@@ -131,6 +131,7 @@ export const getRejectedKycHistoryList = async ({ limit = 10, offset = 0, search
     search,
   };
   const data = await securePost(API_ENDPOINT.USER_KYC.REJECTED_KYC_HISTORY, payload);
+  console.log("Rejected KYC History Data:", data); // Debugging log
 
   if (data?.status !== 200) {
     throw new Error(data?.result || "Unable to fetch rejected kyc history list");
