@@ -7,5 +7,3 @@ export default function IBManagmentPage() {
     </div>
   );
 }
-
-// yha pe call , level show 
