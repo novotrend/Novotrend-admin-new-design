@@ -27,15 +27,10 @@ export default function UserDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* TOP HEADER */}
       <UserHeader />
-
-      {/* STATUS STRIP */}
-      {/* <UserStatusBar /> */}
 
       <UserInfoCard user={user} />
 
-      {/* USER TABS */}
       <UserTabs userDetails={detailsResponse} bankDetails={bankDetails} />
     </div>
   );
