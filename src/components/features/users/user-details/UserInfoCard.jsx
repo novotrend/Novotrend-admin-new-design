@@ -17,7 +17,10 @@ export default function UserInfoCard({ user }) {
       value: `$${user?.wallet_balance || user?.walletBalance || "0.00"}`,
     },
     { label: "Total Deposit", value: `$${user?.total_deposit || user?.totalDeposit || "0.00"}` },
-    { label: "Total Withdrawal", value: `$${user?.total_withdrawal || user?.totalWithdrawal || "0.00"}` },
+    {
+      label: "Total Withdrawal",
+      value: `$${user?.total_withdrawal || user?.totalWithdrawal || "0.00"}`,
+    },
   ];
 
   return (
@@ -34,11 +37,11 @@ export default function UserInfoCard({ user }) {
             )}
           </div>
           <div>
-            <h2 className="text-xl font-semibold text-foreground">
-              {user?.name || "-"}
-            </h2>
+            <h2 className="text-xl font-semibold text-foreground">{user?.name || "-"}</h2>
             <p className="mt-1 text-sm text-muted-foreground">{user?.email || "-"}</p>
-            <p className="mt-2 text-xs text-muted-foreground">{user?.mobile || user?.phone || "-"}</p>
+            <p className="mt-2 text-xs text-muted-foreground">
+              {user?.mobile || user?.phone || "-"}
+            </p>
           </div>
         </div>
 
@@ -53,8 +56,16 @@ export default function UserInfoCard({ user }) {
             </div>
             <div className="space-y-1 rounded-2xl bg-background p-3">
               <p className="text-muted-foreground">IB Status</p>
-              <span className="text-sm font-semibold text-green-600">
-                {user?.ibStatus || "Active"}
+              {/* <span className={`text-sm font-semibold text-green-600`}>
+                {user?.ib_status === "1" ? "Active" : "Inactive"}
+              </span> */}
+
+              <span
+                className={`text-sm font-semibold ${
+                  user?.ib_status === "1" ? "text-green-600" : "text-gray-500"
+                }`}
+              >
+                {user?.ib_status === "1" ? "Active" : "Inactive"}
               </span>
             </div>
           </div>

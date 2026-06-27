@@ -19,13 +19,15 @@ export default function AllFilters({
   statusOptions = [],
   isLoading = false,
 }) {
+  const today = new Date().toISOString().split("T")[0];
   const dateError = useMemo(() => {
     if (!showStartDate || !showEndDate) return "";
     if (!values.start_date && !values.end_date) return "";
     if (!values.start_date || !values.end_date) return "Start date and end date both are required";
     if (values.end_date < values.start_date) return "End date cannot be smaller than start date";
+    if (values.start_date > today || values.end_date > today) return "Future date is not allowed";
     return "";
-  }, [showStartDate, showEndDate, values.start_date, values.end_date]);
+  }, [showStartDate, showEndDate, today, values.start_date, values.end_date]);
   const isApplyDisabled = isLoading || Boolean(dateError);
 
   return (
@@ -47,7 +49,7 @@ export default function AllFilters({
             label="Start Date"
             type="date"
             value={values.start_date || ""}
-            max={values.end_date || undefined}
+            max={values.end_date && values.end_date < today ? values.end_date : today}
             onChange={e => onChange?.("start_date", e.target.value)}
           />
         )}
@@ -58,6 +60,7 @@ export default function AllFilters({
             type="date"
             value={values.end_date || ""}
             min={values.start_date || undefined}
+            max={today}
             onChange={e => onChange?.("end_date", e.target.value)}
           />
         )}
