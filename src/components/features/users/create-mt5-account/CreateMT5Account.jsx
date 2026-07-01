@@ -66,7 +66,7 @@ export default function CreateMT5Account() {
   const { mutate: createAccount, isPending } = useCreateMT5AccountMutation();
 
   // GROUP LIST
-  const { data: groupData } = useGetMT5GroupListQuery();
+  const { data: groupData } = useGetMT5GroupListQuery({ status: 1 });
 
   const groupOptions =
     groupData?.response?.group_list
