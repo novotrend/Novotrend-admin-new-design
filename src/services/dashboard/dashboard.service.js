@@ -19,8 +19,6 @@ export const getDashboardData = async ({ limit = 10, offset = 0 } = {}) => {
   });
   const dashboardData = data?.data ?? data;
 
-  console.log("DASHBOARD DATA DECRYPTED RESPONSE:", dashboardData);
-
   if (dashboardData?.status !== 200) {
     throw new Error(dashboardData?.result || "Unable to fetch dashboard data");
   }

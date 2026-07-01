@@ -143,7 +143,7 @@ const getSupportTicketList = async ({ endpoint, label, errorMessage, limit, offs
     })
   );
 
-  console.log(`${label} DECRYPTED RESPONSE:`, data);
+  // console.log(`${label} DECRYPTED RESPONSE:`, data);
 
   if (data?.status !== 200) {
     throw new Error(data?.result || errorMessage);

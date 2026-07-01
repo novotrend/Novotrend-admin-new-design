@@ -17,7 +17,6 @@ export const getMT5GroupList = async ({ limit = 10, offset = 0, search = "", sta
   };
   // SECURE API CALL
   const data = await securePost(API_ENDPOINT.GROUPS.LISTGROUP, payload);
-  console.log("data", data);
   // VALIDATION
   if (data?.status !== 200) {
     throw new Error(data?.result || "Unable to fetch groups");
