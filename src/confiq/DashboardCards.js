@@ -4,7 +4,6 @@ export const dashboardCards = [
   {
     category: "overview",
     title: "Total User",
-    value: "24,892",
     valueKey: "total_user",
     icon: Users,
     href: "/users/list-user",
@@ -12,7 +11,6 @@ export const dashboardCards = [
   {
     category: "overview",
     title: "Total IB",
-    value: "1,240",
     valueKey: "total_ib",
     icon: Landmark,
     href: "/ib-managment/list-become-ib",
@@ -20,7 +18,6 @@ export const dashboardCards = [
   {
     category: "overview",
     title: "Total Withdrawal",
-    value: "$540K",
     valueKey: "total_withdraw",
     valueType: "currency",
     icon: Wallet,
@@ -29,7 +26,6 @@ export const dashboardCards = [
   {
     category: "overview",
     title: "Total Deposit",
-    value: "$1.2M",
     valueKey: "total_deposit",
     valueType: "currency",
     icon: BadgeDollarSign,
@@ -40,7 +36,6 @@ export const dashboardCards = [
   {
     category: "deposits",
     title: "Daily Deposit",
-    value: "$12,450",
     valueKey: "daily_deposit",
     valueType: "currency",
     icon: Wallet,
@@ -49,7 +44,6 @@ export const dashboardCards = [
   {
     category: "deposits",
     title: "Weekly Deposit",
-    value: "$84,320",
     valueKey: "weekly_deposit",
     valueType: "currency",
     icon: CreditCard,
@@ -58,7 +52,6 @@ export const dashboardCards = [
   {
     category: "deposits",
     title: "Monthly Deposit",
-    value: "$240,000",
     valueKey: "monthly_deposit",
     valueType: "currency",
     icon: Wallet,
@@ -67,7 +60,6 @@ export const dashboardCards = [
   {
     category: "deposits",
     title: "Pending Deposit",
-    value: "42",
     valueKey: "pending_deposit",
     icon: Wallet,
     href: "/userkyc/new-kyc",
@@ -77,7 +69,6 @@ export const dashboardCards = [
   {
     category: "withdrawals",
     title: "Daily Withdraw",
-    value: "$4,250",
     valueKey: "daily_withdraw",
     valueType: "currency",
     icon: Wallet,
@@ -86,7 +77,6 @@ export const dashboardCards = [
   {
     category: "withdrawals",
     title: "Weekly Withdraw",
-    value: "$28,900",
     valueKey: "weekly_withdraw",
     valueType: "currency",
     icon: Wallet,
@@ -95,7 +85,6 @@ export const dashboardCards = [
   {
     category: "withdrawals",
     title: "Monthly Withdraw",
-    value: "$98,000",
     valueKey: "monthly_withdraw",
     valueType: "currency",
     icon: Wallet,
@@ -104,7 +93,6 @@ export const dashboardCards = [
   {
     category: "withdrawals",
     title: "Pending Withdraw",
-    value: "19",
     valueKey: "pending_withdraw",
     icon: Wallet,
     href: "/withdrawal/withdrawal-request",
@@ -114,36 +102,39 @@ export const dashboardCards = [
   {
     category: "ib",
     title: "Daily IB Withdraw",
-    value: "$1,200",
+    valueKey: "daily_ib_withdraw",
+    valueType: "currency",
     icon: Landmark,
     href: "/report/ib-withdrawal-report",
   },
   {
     category: "ib",
     title: "Weekly IB Withdraw",
-    value: "$8,400",
+    valueKey: "weekly_ib_withdraw",
+    valueType: "currency",
     icon: Landmark,
     href: "/report/ib-withdrawal-report",
   },
   {
     category: "ib",
     title: "Monthly IB Withdraw",
-    value: "$24,000",
+    valueKey: "monthly_ib_withdraw",
+    valueType: "currency",
     icon: Landmark,
     href: "/report/ib-withdrawal-report",
   },
   {
     category: "ib",
     title: "Total IB Withdraw",
-    value: "$120K",
+    valueKey: "total_ib_withdraw",
+    valueType: "currency",
     icon: BadgeDollarSign,
     href: "/report/ib-withdrawal-report",
   },
   {
     category: "ib",
     title: "Pending IB Request",
-    value: "12",
-    valueKey: "pending_ib_request",
+    valueKey: "total_pending_ib",
     icon: Landmark,
     href: "/ib-managment/list-ib-request",
   },
@@ -152,7 +143,6 @@ export const dashboardCards = [
   {
     category: "registrations",
     title: "Daily Registration",
-    value: "182",
     valueKey: "daily_registration",
     icon: UserPlus,
     href: "/users/list-user",
@@ -160,7 +150,6 @@ export const dashboardCards = [
   {
     category: "registrations",
     title: "Monthly Registration",
-    value: "4,820",
     valueKey: "monthly_registration",
     icon: Users,
     href: "/users/list-user",
@@ -170,7 +159,6 @@ export const dashboardCards = [
   {
     category: "mt5",
     title: "Daily MT5 ID",
-    value: "54",
     valueKey: "daily_mt5_id",
     icon: CreditCard,
     href: "/users/mt5-user-list",
@@ -178,7 +166,6 @@ export const dashboardCards = [
   {
     category: "mt5",
     title: "Monthly MT5 ID",
-    value: "1,340",
     valueKey: "monthly_mt5_id",
     icon: CreditCard,
     href: "/users/mt5-user-list",

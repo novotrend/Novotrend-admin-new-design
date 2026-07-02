@@ -9,16 +9,16 @@ import { useDashboardQuery } from "@/services/dashboard/dashboard.query";
 const tabs = ["overview", "deposits", "withdrawals", "ib", "registrations", "mt5"];
 
 const formatCardValue = (value, type) => {
-  if (value === undefined || value === null || value === "") return "--";
+  const displayValue = value === undefined || value === null || value === "" ? 0 : value;
 
   if (type === "currency") {
-    return `$${Number(value || 0).toLocaleString("en-US", {
+    return `$${Number(displayValue || 0).toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })}`;
   }
 
-  return Number(value || 0).toLocaleString("en-US");
+  return Number(displayValue || 0).toLocaleString("en-US");
 };
 
 export default function DashboardCards() {
@@ -36,14 +36,6 @@ export default function DashboardCards() {
       {/* Header */}
       <div className="flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
         {/* Left */}
-        {/* <div>
-          <h1 className="text-[30px] font-bold tracking-tight text-foreground">
-            Welcome back, Shubham 👋
-          </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Monitor platform performance, transactions and activity.
-          </p>
-        </div> */}
 
         {/* Tabs */}
         <div className="flex flex-wrap items-center gap-3 rounded-3xl border border-border bg-card p-2">
@@ -79,11 +71,7 @@ export default function DashboardCards() {
           <StatsCard
             key={card.title}
             title={card.title}
-            value={
-              card.valueKey
-                ? formatCardValue(dashboardData[card.valueKey], card.valueType)
-                : card.value
-            }
+            value={formatCardValue(dashboardData[card.valueKey], card.valueType)}
             icon={card.icon}
             href={card.href}
           />
