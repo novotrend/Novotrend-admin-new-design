@@ -129,14 +129,14 @@ export const dashboardCards = [
     valueKey: "total_ib_withdraw",
     valueType: "currency",
     icon: BadgeDollarSign,
-    href: "/report/ib-withdrawal-report",
+    href: "/ib-managment/accepted-ib-list",
   },
   {
     category: "ib",
     title: "Pending IB Request",
     valueKey: "total_pending_ib",
     icon: Landmark,
-    href: "/ib-managment/list-ib-request",
+    href: "/ib-managment/withdraw-ib-request",
   },
 
   // Registrations
