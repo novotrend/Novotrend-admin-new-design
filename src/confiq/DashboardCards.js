@@ -62,7 +62,7 @@ export const dashboardCards = [
     title: "Pending Deposit",
     valueKey: "pending_deposit",
     icon: Wallet,
-    href: "/userkyc/new-kyc",
+    href: "/walletrequest/deposit-request",
   },
 
   // Withdrawals
