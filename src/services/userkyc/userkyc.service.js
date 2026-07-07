@@ -142,55 +142,6 @@ export const getRejectedKycHistoryList = async ({ limit = 10, offset = 0, search
 
 // ends
 
-const normalizePlainResponse = responseData => {
-  if (typeof responseData === "object" && responseData !== null) {
-    return responseData?.data ?? responseData;
-  }
-  if (typeof responseData !== "string") {
-    return responseData;
-  }
-
-  const trimmedResponse = responseData.trim();
-
-  if (!trimmedResponse) {
-    return {
-      status: 200,
-      result: "Request completed successfully",
-    };
-  }
-
-  try {
-    const parsedResponse = JSON.parse(trimmedResponse);
-
-    return parsedResponse?.data ?? parsedResponse;
-  } catch {
-    return {
-      status: 200,
-      result: trimmedResponse,
-    };
-  }
-};
-
-const normalizeEncryptedOrPlainResponse = responseData => {
-  try {
-    const decrypted = decryptData(responseData);
-
-    return decrypted?.data ?? decrypted;
-  } catch {
-    if (typeof responseData?.result === "string") {
-      try {
-        const decryptedResult = decryptData(responseData.result);
-
-        return decryptedResult?.data ?? decryptedResult;
-      } catch {
-        return responseData;
-      }
-    }
-
-    return normalizePlainResponse(responseData);
-  }
-};
-
 const formDataToPayloadAndFile = formData => {
   const payload = {};
   let bankphoto = null;
@@ -224,6 +175,8 @@ export const addBankAccount = async formData => {
   const requestBody = new FormData();
   const encryptedPayload = encryptData(payload);
 
+  console.log("ADD BANK ACCOUNT PAYLOAD:", payload); // Debugging log
+
   requestBody.append("data", encryptedPayload);
 
   if (bankphoto) {
@@ -235,7 +188,17 @@ export const addBankAccount = async formData => {
       "Content-Type": "multipart/form-data",
     },
   });
-  const data = normalizeEncryptedOrPlainResponse(response.data);
+
+  let data;
+
+  try {
+    const decryptedResponse = decryptData(response.data);
+    data = decryptedResponse?.data ?? decryptedResponse;
+  } catch {
+    data = response.data?.data ?? response.data;
+  }
+
+  console.log("ADD BANK ACCOUNT RESPONSE:", data); // Debugging log
 
   if (data?.status !== 200) {
     throw new Error(data?.result || "Unable to add bank account");
