@@ -14,10 +14,6 @@ export const getUserList = async ({ limit = 10, offset = 0, search }) => {
     search: search?.trim() || "",
   };
 
-  console.log("GET USER LIST DECRYPTED PAYLOAD:", payload);
-
-  const data = await securePost(API_ENDPOINT.USERS.USERLIST, payload);
-  console.log("GET USER LIST DECRYPTED RESPONSE:", data);
   // VALIDATION
   if (data?.status !== 200) {
     throw new Error(data?.result || "Unable to load users");
@@ -117,13 +113,9 @@ const getUserDetailTabData = async ({
     payload.accno = accno;
   }
 
-  console.log(`${logName} DECRYPTED PAYLOAD:`, payload);
-
   const data = await securePost(endpoint, payload, {
     logName,
   });
-
-  console.log(`${logName} DECRYPTED RESPONSE:`, data);
 
   if (data?.status !== 200 && data?.status !== 404) {
     throw new Error(data?.result || "Unable to fetch user detail data");
@@ -193,7 +185,6 @@ export const getUserDownline = async ({ user_id, user_ref_code, reg_code, email 
     logName: "GET USER DOWNLINE",
   });
 
-  console.log("GET USER DOWNLINE DECRYPTED RESPONSE:", data);
 
   if (data?.status !== 200 && data?.status !== 404) {
     throw new Error(data?.result || "Unable to fetch user downline");
@@ -429,7 +420,6 @@ export const getMT5PasswordList = async ({ status = 0, limit = 10, offset = 0, s
     search,
   };
   const res = await securePost(API_ENDPOINT.USERS.MT5_MAIN_PASSWORD_REQUEST_LIST, payload);
-  console.log("MT5 PASSWORD LIST DECRYPTED RESPONSE:", res);
   if (res?.status !== 200) {
     throw new Error(res?.result || "Failed to fetch MT5 password list");
   }

@@ -182,7 +182,7 @@ export const addBankAccount = async formData => {
   const requestBody = new FormData();
   const encryptedPayload = encryptData(payload);
 
-  console.log("ADD BANK ACCOUNT PAYLOAD:", payload); // Debugging log
+  // console.log("ADD BANK ACCOUNT PAYLOAD:", payload); // Debugging log
 
   requestBody.append("data", encryptedPayload);
 
@@ -212,7 +212,7 @@ export const addBankAccount = async formData => {
     }
   }
 
-  console.log("ADD BANK ACCOUNT RESPONSE:", data); // Debugging log
+  // console.log("ADD BANK ACCOUNT RESPONSE:", data); // Debugging log
 
   if (data?.status !== 200) {
     throw new Error(data?.result || "Unable to add bank account");
