@@ -44,14 +44,7 @@ export default function DashboardCards() {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`
-                rounded-2xl
-                px-5
-                py-2.5
-                text-sm
-                font-semibold
-                capitalize
-                transition-all
-                duration-300
+                rounded-2xl px-5 py-2.5 text-sm font-semibold capitalize  transition-all duration-300
                 ${
                   activeTab === tab
                     ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
