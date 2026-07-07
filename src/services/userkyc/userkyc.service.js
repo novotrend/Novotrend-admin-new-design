@@ -159,6 +159,14 @@ const formDataToPayloadAndFile = formData => {
   return { payload, bankphoto };
 };
 
+const cleanEncryptedText = value => {
+  return String(value)
+    .trim()
+    .replace(/^```[^\n]*\n?/i, "")
+    .replace(/```\s*$/i, "")
+    .trim();
+};
+
 // ADD BANK ACCOUNT
 
 export const addBankAccount = async formData => {
@@ -192,10 +200,17 @@ export const addBankAccount = async formData => {
   let data;
 
   try {
-    const decryptedResponse = decryptData(response.data);
+    const responseData =
+      typeof response.data === "string" ? cleanEncryptedText(response.data) : response.data;
+    const decryptedResponse = decryptData(responseData);
     data = decryptedResponse?.data ?? decryptedResponse;
   } catch {
-    data = response.data?.data ?? response.data;
+    try {
+      const decryptedResult = decryptData(cleanEncryptedText(response.data?.result));
+      data = decryptedResult?.data ?? decryptedResult;
+    } catch {
+      data = response.data?.data ?? response.data;
+    }
   }
 
   console.log("ADD BANK ACCOUNT RESPONSE:", data); // Debugging log
