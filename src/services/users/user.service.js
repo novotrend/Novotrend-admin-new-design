@@ -14,6 +14,7 @@ export const getUserList = async ({ limit = 10, offset = 0, search }) => {
     search: search?.trim() || "",
   };
 
+  const data = await securePost(API_ENDPOINT.USERS.USERLIST, payload);
   // VALIDATION
   if (data?.status !== 200) {
     throw new Error(data?.result || "Unable to load users");
@@ -150,7 +151,12 @@ export const getUserLiveTrade = ({
     accno,
   });
 
-export const getUserTradingReport = ({ user_id, sdate = "", edate = "", accno = "" }) =>
+export const getUserTradingReport = ({
+  user_id,
+  sdate = "",
+  edate = "",
+  accno = "",
+}) =>
   getUserDetailTabData({
     endpoint: API_ENDPOINT.USERS.TRADING_REPORT,
     logName: "GET USER TRADING REPORT",
@@ -160,7 +166,12 @@ export const getUserTradingReport = ({ user_id, sdate = "", edate = "", accno = 
     accno,
   });
 
-export const getUserDownline = async ({ user_id, user_ref_code, reg_code, email }) => {
+export const getUserDownline = async ({
+  user_id,
+  user_ref_code,
+  reg_code,
+  email,
+}) => {
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -172,7 +183,12 @@ export const getUserDownline = async ({ user_id, user_ref_code, reg_code, email 
   };
 
   const numericUserId = Number(user_id);
-  if (user_id !== undefined && user_id !== null && user_id !== "" && !Number.isNaN(numericUserId)) {
+  if (
+    user_id !== undefined &&
+    user_id !== null &&
+    user_id !== "" &&
+    !Number.isNaN(numericUserId)
+  ) {
     payload.user_id = numericUserId;
   }
 
@@ -185,7 +201,6 @@ export const getUserDownline = async ({ user_id, user_ref_code, reg_code, email 
     logName: "GET USER DOWNLINE",
   });
 
-
   if (data?.status !== 200 && data?.status !== 404) {
     throw new Error(data?.result || "Unable to fetch user downline");
   }
@@ -194,7 +209,11 @@ export const getUserDownline = async ({ user_id, user_ref_code, reg_code, email 
 };
 
 // GET MT5 USER LIST
-export const getMT5UserList = async ({ limit = 10, offset = 0, search = "" }) => {
+export const getMT5UserList = async ({
+  limit = 10,
+  offset = 0,
+  search = "",
+}) => {
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -233,9 +252,13 @@ export const getMT5AccountDetails = async ({ accno }) => {
     accno: accno || "",
   };
 
-  const data = await securePost(API_ENDPOINT.USERS.GET_MT5_ACCOUNT_DETAILS, payload, {
-    logName: "GET MT5 ACCOUNT DETAILS",
-  });
+  const data = await securePost(
+    API_ENDPOINT.USERS.GET_MT5_ACCOUNT_DETAILS,
+    payload,
+    {
+      logName: "GET MT5 ACCOUNT DETAILS",
+    },
+  );
 
   if (data?.status !== 200) {
     throw new Error(data?.result || "Unable to fetch MT5 account details");
@@ -257,7 +280,10 @@ export const getUsernameByEmail = async ({ email }) => {
     code: email,
   };
 
-  const data = await securePost(API_ENDPOINT.USERS.GET_USERNAME_BY_EMAIL, payload);
+  const data = await securePost(
+    API_ENDPOINT.USERS.GET_USERNAME_BY_EMAIL,
+    payload,
+  );
 
   // VALIDATION
   if (data?.status !== 200) {
@@ -278,7 +304,10 @@ export const getMT5AccountByEmail = async ({ email }) => {
     code: email,
   };
 
-  const data = await securePost(API_ENDPOINT.USERS.GET_MT5_ACCOUNT_BY_EMAIL, payload);
+  const data = await securePost(
+    API_ENDPOINT.USERS.GET_MT5_ACCOUNT_BY_EMAIL,
+    payload,
+  );
   // VALIDATION
   if (data?.status !== 200) {
     throw new Error(data?.result || "No MT5 accounts found");
@@ -338,7 +367,10 @@ export const changeMT5Password = async ({
     passwordtype,
   };
 
-  const data = await securePost(API_ENDPOINT.USERS.CHANGE_MT5_PASSWORD, payload);
+  const data = await securePost(
+    API_ENDPOINT.USERS.CHANGE_MT5_PASSWORD,
+    payload,
+  );
   // VALIDATION
   if (data?.status !== 200) {
     throw new Error(data?.result || "Password change failed");
@@ -360,7 +392,10 @@ export const getUsernameByAccountNo = async ({ accno }) => {
     accno,
   };
 
-  const data = await securePost(API_ENDPOINT.USERS.GET_USERNAME_BY_ACCOUNTNO, payload);
+  const data = await securePost(
+    API_ENDPOINT.USERS.GET_USERNAME_BY_ACCOUNTNO,
+    payload,
+  );
 
   // VALIDATION
   if (data?.status !== 200) {
@@ -381,7 +416,10 @@ export const changeMT5Leverage = async ({ accno, leverage }) => {
     accleverage: leverage,
   };
 
-  const data = await securePost(API_ENDPOINT.USERS.CHANGE_MT5_LEVERAGE, payload);
+  const data = await securePost(
+    API_ENDPOINT.USERS.CHANGE_MT5_LEVERAGE,
+    payload,
+  );
   // VALIDATION
   if (data?.status !== 200) {
     throw new Error(data?.result || "Unable to change leverage");
@@ -399,7 +437,10 @@ export const sendVerificationMailMT5 = async ({ accountno }) => {
     token,
     accountno,
   };
-  const data = await securePost(API_ENDPOINT.USERS.SEND_VERIFICATION_MAIL_MT5, payload);
+  const data = await securePost(
+    API_ENDPOINT.USERS.SEND_VERIFICATION_MAIL_MT5,
+    payload,
+  );
   if (data?.status !== 200) {
     throw new Error(data?.result || "Unable to send verification mail");
   }
@@ -407,7 +448,12 @@ export const sendVerificationMailMT5 = async ({ accountno }) => {
 };
 
 // Main Mt5 Password list
-export const getMT5PasswordList = async ({ status = 0, limit = 10, offset = 0, search = "" }) => {
+export const getMT5PasswordList = async ({
+  status = 0,
+  limit = 10,
+  offset = 0,
+  search = "",
+}) => {
   const token = localStorage.getItem("token");
   if (!token) {
     throw new Error("Session expired");
@@ -419,7 +465,10 @@ export const getMT5PasswordList = async ({ status = 0, limit = 10, offset = 0, s
     offset,
     search,
   };
-  const res = await securePost(API_ENDPOINT.USERS.MT5_MAIN_PASSWORD_REQUEST_LIST, payload);
+  const res = await securePost(
+    API_ENDPOINT.USERS.MT5_MAIN_PASSWORD_REQUEST_LIST,
+    payload,
+  );
   if (res?.status !== 200) {
     throw new Error(res?.result || "Failed to fetch MT5 password list");
   }
@@ -436,7 +485,10 @@ export const changeMT5PasswordRequestStatus = async ({ id, status }) => {
     id,
     status,
   };
-  const data = await securePost(API_ENDPOINT.USERS.CHANGE_MT5_MAIN_PASSWORD_REQUEST_LIST, payload);
+  const data = await securePost(
+    API_ENDPOINT.USERS.CHANGE_MT5_MAIN_PASSWORD_REQUEST_LIST,
+    payload,
+  );
   if (data?.status !== 200) {
     throw new Error(data?.result || "Unable to update MT5 password request");
   }
