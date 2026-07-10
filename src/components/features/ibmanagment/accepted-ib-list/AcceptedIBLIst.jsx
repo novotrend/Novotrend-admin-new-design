@@ -20,6 +20,7 @@ const tableHeaders = [
   { label: "Amount", key: "amount", sortable: true },
   { label: "Admin", key: "admin", sortable: true },
   { label: "Remark", key: "remark", sortable: true },
+  { label: "Accepted Date", key: "accepted_date", sortable: true },
 ];
 
 export default function AcceptedIBList() {
@@ -105,13 +106,17 @@ export default function AcceptedIBList() {
               </TableCell>
 
               <TableCell className="px-6 py-5 text-sm font-medium text-foreground">
-                {item?.admin || item?.admin_name || "-"}
+                {item?.accepted_by || "-"}
               </TableCell>
 
               <TableCell className="px-6 py-5">
                 <span className="inline-flex rounded-xl bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-600">
                   <TruncatedCell text={item?.remark} maxLength={30} className="!text-emerald-600" />
                 </span>
+              </TableCell>
+
+              <TableCell className="px-6 py-5 text-sm font-medium text-foreground">
+                {item?.accepted_date || "-"}
               </TableCell>
             </TableRow>
           ))

@@ -21,7 +21,6 @@ const tableHeaders = [
   { label: "Date", key: "date", sortable: true },
   { label: "Amount", key: "amount", sortable: true },
   { label: "Method", key: "method", sortable: true },
-  { label: "Admin", key: "admin", sortable: true },
   { label: "Payment Details", key: "paymentDetails", sortable: false },
   { label: "Action", key: "action", sortable: false },
 ];
@@ -97,7 +96,9 @@ export default function WithdrawlRequest() {
                     </TableCell>
                     {/* NAME */}
                     <TableCell className="px-6 py-5">
-                      <div className="flex items-center gap-3">                        <div>
+                      <div className="flex items-center gap-3">
+                        {" "}
+                        <div>
                           <p className="text-sm font-semibold text-foreground">
                             {item?.name || "-"}
                           </p>
@@ -127,11 +128,6 @@ export default function WithdrawlRequest() {
                       <span className="rounded-xl bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
                         {item?.withdraw_type || "-"}
                       </span>
-                    </TableCell>
-
-                    {/* ADMIN */}
-                    <TableCell className="px-6 py-5 text-sm font-medium text-foreground">
-                      {item?.admin || "-"}
                     </TableCell>
 
                     {/* PAYMENT DETAILS */}
