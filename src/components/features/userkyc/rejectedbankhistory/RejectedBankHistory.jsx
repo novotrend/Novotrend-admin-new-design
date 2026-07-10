@@ -45,6 +45,12 @@ export default function RejectedBankHistory() {
   const [debouncedSearch] = useDebounce(search, 500);
   const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
+
+  const handleSearchChange = value => {
+    setSearch(value);
+    setOffset(0);
+  };
+
   const { data, isLoading, isError } = useBankRejectedHistoryListQuery({
     limit,
     offset,
@@ -58,7 +64,7 @@ export default function RejectedBankHistory() {
       description="Manage and review all rejected bank KYC requests"
       actions={
         <>
-          <TableSearch value={search} onChange={setSearch} />
+          <TableSearch value={search} onChange={handleSearchChange} />
           <ExportDropdown />
         </>
       }
