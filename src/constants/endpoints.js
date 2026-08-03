@@ -3,7 +3,7 @@ export const API_ENDPOINT = {
     LOGIN: "/login/login.php",
     VERIFYAUTH: "/login/login_verify.php",
   },
-  
+
   DASHBOARD: {
     DASHBOARD: "/dashboard/dashboard.php",
     TICKET_ASSIGN: "/dashboard/ticket_asign.php",
