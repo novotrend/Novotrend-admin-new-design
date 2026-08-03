@@ -13,16 +13,18 @@ import {
 
 import { decryptData } from "@/lib/utils";
 import { useWithdrawalActionMutation } from "@/services/withdrawalrequest/withdrawal.mutation";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function WithdrawalActionModal({ open, onOpenChange, selectedRequest, actionType }) {
   const [remark, setRemark] = useState("");
+  const queryClient = useQueryClient();
 
   const { mutate: withdrawalAction, isPending } = useWithdrawalActionMutation();
 
   const handleSubmit = () => {
-        if (!remark?.trim()) {
+    if (!remark?.trim()) {
       toast.error("Remark is required");
       return;
     }
@@ -39,8 +41,11 @@ export default function WithdrawalActionModal({ open, onOpenChange, selectedRequ
             const decryptedResult = decryptData(data?.response?.result);
             message = decryptedResult?.data?.result || decryptedResult?.result || message;
           } catch (error) {
-                        message = data?.result || message;
+            message = data?.result || message;
           }
+          queryClient.invalidateQueries({ queryKey: ["withdrawal-request-list"] });
+          queryClient.invalidateQueries({ queryKey: ["withdrawal-accept-list"] });
+          queryClient.invalidateQueries({ queryKey: ["withdrawal-reject-list"] });
           toast.success(message);
           setRemark("");
           onOpenChange(false);
